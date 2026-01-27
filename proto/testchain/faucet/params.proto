@@ -1,0 +1,18 @@
+syntax = "proto3";
+package testchain.faucet;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "testchain/x/faucet/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "testchain/x/faucet/Params";
+  option (gogoproto.equal) = true;
+
+  
+  uint64 maxPerAddress = 1 [(gogoproto.moretags) = "yaml:\"max_per_address\""];
+  uint64 maxPerRequest = 2 [(gogoproto.moretags) = "yaml:\"max_per_request\""];
+  bool running = 3 [(gogoproto.moretags) = "yaml:\"running\""];
+}

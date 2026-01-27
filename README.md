@@ -1,1 +1,0 @@
-# restakechain-go-testnet
