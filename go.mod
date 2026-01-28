@@ -1,8 +1,6 @@
 module testchain
 
-go 1.22.7
-
-toolchain go1.23.4
+go 1.25.4
 
 replace (
 	// fix upstream GHSA-h395-qcrw-5vmq vulnerability.

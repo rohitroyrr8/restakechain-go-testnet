@@ -19,6 +19,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -27,6 +28,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"testchain/app"
+	faucetmoduletypes "testchain/x/faucet/types"
 )
 
 const (
@@ -208,6 +210,18 @@ func initAppForTestnet(app *app.App, args valArgs) *app.App {
 		if err != nil {
 			tmos.Exit(err.Error())
 		}
+	}
+
+	// Fund faucet module with coins
+	faucetFundingCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, 100000000))
+	err = app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, faucetFundingCoins)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	faucetModuleAddr := authtypes.NewModuleAddress(faucetmoduletypes.ModuleName)
+	err = app.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, faucetModuleAddr, faucetFundingCoins)
+	if err != nil {
+		tmos.Exit(err.Error())
 	}
 
 	return app

@@ -15,4 +15,5 @@ message Params {
   uint64 maxPerAddress = 1 [(gogoproto.moretags) = "yaml:\"max_per_address\""];
   uint64 maxPerRequest = 2 [(gogoproto.moretags) = "yaml:\"max_per_request\""];
   bool running = 3 [(gogoproto.moretags) = "yaml:\"running\""];
+  string defaultDenom = 4 [(gogoproto.moretags) = "yaml:\"default_denom\""];
 }

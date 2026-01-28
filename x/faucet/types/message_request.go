@@ -20,5 +20,10 @@ func (msg *MsgRequest) ValidateBasic() error {
 	if err != nil {
 		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+
+	if msg.Amount == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("amount must be greater than zero")
+	}
+
 	return nil
 }

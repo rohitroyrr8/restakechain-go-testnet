@@ -39,5 +39,13 @@ message QueryByAddressRequest {
   string address = 1;
 }
 
-message QueryByAddressResponse {}
+message Request {
+  uint64 amount = 1;
+  int64 height = 2;
+}
+
+message QueryByAddressResponse {
+  repeated Request requests = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  uint64 total = 2;
+}
 

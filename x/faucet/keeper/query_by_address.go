@@ -17,8 +17,29 @@ func (k Keeper) ByAddress(goCtx context.Context, req *types.QueryByAddressReques
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	// Parse the address
+	addr, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid address")
+	}
 
-	return &types.QueryByAddressResponse{}, nil
+	// Get all requests for this address
+	requestsData := k.GetRequestsByAddress(ctx, addr)
+
+	// Convert RequestData to proto Request
+	var requests []types.Request
+	for _, req := range requestsData {
+		requests = append(requests, types.Request{
+			Amount: req.Amount,
+			Height: req.Height,
+		})
+	}
+
+	// Get total requested
+	total := k.GetTotalRequested(ctx, addr)
+
+	return &types.QueryByAddressResponse{
+		Requests: requests,
+		Total:    total,
+	}, nil
 }

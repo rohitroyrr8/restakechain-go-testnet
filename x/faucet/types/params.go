@@ -26,6 +26,12 @@ var (
 	DefaultRunning bool = false
 )
 
+var (
+	KeyDefaultDenom = []byte("DefaultDenom")
+	// TODO: Determine the default value
+	DefaultDefaultDenom string = "stake"
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -36,11 +42,13 @@ func NewParams(
 	maxPerAddress uint64,
 	maxPerRequest uint64,
 	running bool,
+	defaultDenom string,
 ) Params {
 	return Params{
 		MaxPerAddress: maxPerAddress,
 		MaxPerRequest: maxPerRequest,
 		Running:       running,
+		DefaultDenom:  defaultDenom,
 	}
 }
 
@@ -50,6 +58,7 @@ func DefaultParams() Params {
 		DefaultMaxPerAddress,
 		DefaultMaxPerRequest,
 		DefaultRunning,
+		DefaultDefaultDenom,
 	)
 }
 
@@ -59,6 +68,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxPerAddress, &p.MaxPerAddress, validateMaxPerAddress),
 		paramtypes.NewParamSetPair(KeyMaxPerRequest, &p.MaxPerRequest, validateMaxPerRequest),
 		paramtypes.NewParamSetPair(KeyRunning, &p.Running, validateRunning),
+		paramtypes.NewParamSetPair(KeyDefaultDenom, &p.DefaultDenom, validateDefaultDenom),
 	}
 }
 
@@ -73,6 +83,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateRunning(p.Running); err != nil {
+		return err
+	}
+
+	if err := validateDefaultDenom(p.DefaultDenom); err != nil {
 		return err
 	}
 
@@ -114,6 +128,20 @@ func validateRunning(v interface{}) error {
 
 	// TODO implement validation
 	_ = running
+
+	return nil
+}
+
+// validateDefaultDenom validates the DefaultDenom param
+func validateDefaultDenom(v interface{}) error {
+	defaultDenom, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	}
+
+	if defaultDenom == "" {
+		return fmt.Errorf("default denom cannot be empty")
+	}
 
 	return nil
 }

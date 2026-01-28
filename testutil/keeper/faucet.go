@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"context"
 	"testing"
 
 	"cosmossdk.io/log"
@@ -21,6 +22,21 @@ import (
 	"testchain/x/faucet/types"
 )
 
+// MockBankKeeper is a mock implementation of types.BankKeeper for testing
+type MockBankKeeper struct{}
+
+func (m *MockBankKeeper) SendCoinsFromModuleToAccount(ctx context.Context, moduleName string, recipientAddr sdk.AccAddress, amt sdk.Coins) error {
+	return nil
+}
+
+func (m *MockBankKeeper) SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, moduleName string, amt sdk.Coins) error {
+	return nil
+}
+
+func (m *MockBankKeeper) SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins {
+	return sdk.NewCoins()
+}
+
 func FaucetKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
@@ -33,10 +49,14 @@ func FaucetKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	cdc := codec.NewProtoCodec(registry)
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 
+	// Create a mock bankKeeper for testing
+	bankKeeper := &MockBankKeeper{}
+
 	k := keeper.NewKeeper(
 		cdc,
 		runtime.NewKVStoreService(storeKey),
 		log.NewNopLogger(),
+		bankKeeper,
 		authority.String(),
 	)
 
